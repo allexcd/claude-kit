@@ -17,12 +17,6 @@ Run this inside your project directory:
 npx claude-workspace-kit init
 ```
 
-Or using the short alias:
-
-```bash
-npx cwk init
-```
-
 This scaffolds all kit files into your project and creates a `.cwk.lock` file to track versions.
 
 The installer is **interactive** and walks you through three steps:
@@ -60,9 +54,9 @@ If you are in a git repository, the installer prompts you to choose how git shou
 You can skip the prompt by passing a flag directly:
 
 ```bash
-npx cwk init --git-exclude  # local-only exclusion via .git/info/exclude
-npx cwk init --gitignore    # append to .gitignore (shared with the team)
-npx cwk init --git-track    # no exclusion — commit the files with the repo
+npx claude-workspace-kit init --git-exclude  # local-only exclusion via .git/info/exclude
+npx claude-workspace-kit init --gitignore    # append to .gitignore (shared with the team)
+npx claude-workspace-kit init --git-track    # no exclusion — commit the files with the repo
 ```
 
 If you chose `--git-track`, the installer prompts whether to commit immediately. If you are on `main` or `master`, it also suggests creating a feature branch first:
@@ -106,7 +100,7 @@ npx claude-workspace-kit@latest update --dry-run
 To remove all kit-installed files from your project:
 
 ```bash
-npx cwk uninstall
+npx claude-workspace-kit uninstall
 ```
 
 By default this removes only **kit-managed** files and the `.cwk.lock` lockfile. **User-owned** files (`CLAUDE.md`, `tasks/`) are left untouched.
@@ -114,14 +108,14 @@ By default this removes only **kit-managed** files and the `.cwk.lock` lockfile.
 To remove everything — including user-owned files:
 
 ```bash
-npx cwk uninstall --all
+npx claude-workspace-kit uninstall --all
 ```
 
 Preview what would be removed without deleting anything:
 
 ```bash
-npx cwk uninstall --dry-run
-npx cwk uninstall --all --dry-run
+npx claude-workspace-kit uninstall --dry-run
+npx claude-workspace-kit uninstall --all --dry-run
 ```
 
 Empty directories left behind after file removal are cleaned up automatically. Directories that still contain other files are preserved. Git exclusion entries added by the kit (in `.git/info/exclude` or `.gitignore`) are also removed.
@@ -141,7 +135,7 @@ Empty directories left behind after file removal are cleaned up automatically. D
 | `cwk uninstall --all` | Also remove user-owned files (full cleanup) |
 | `cwk uninstall --dry-run` | Preview what would be removed without deleting |
 
-`cwk` is an alias for `claude-workspace-kit`.
+The installed binary is available as `cwk`, but one-shot `npx` commands must use the package name: `npx claude-workspace-kit ...`.
 
 ### Claude Code slash commands
 
@@ -198,7 +192,7 @@ This way your customizations live alongside the kit without conflicts.
 - **`.claude/hooks/session-start.sh`** — runs at the start of every session; surfaces open `tasks/todo.md` items and prior `tasks/lessons.md` corrections so Claude reviews them before starting new work.
 - **`tasks/todo.md` + `tasks/lessons.md`** — canonical persisted plan and lesson log.
 - **`~/.claude/projects/<project-slug>/memory/`** — personal cross-session memory, managed by Claude Code outside the repo. Use for user preferences, project context, and references that don't belong committed. Use `tasks/lessons.md` for anything team-shared.
-- **`.cwk.lock`** — written by `npx cwk init`, read by `update` and `uninstall` to know which files are kit-managed vs user-owned.
+- **`.cwk.lock`** — written by `npx claude-workspace-kit init`, read by `update` and `uninstall` to know which files are kit-managed vs user-owned.
 
 ## Compatibility
 

@@ -110,7 +110,7 @@ function cmdUpdate(args) {
 
   const lock = readLock();
   if (!lock) {
-    console.error(`\n  ERROR: No ${LOCK_FILE} found. Run 'npx cwk init' first.\n`);
+    console.error(`\n  ERROR: No ${LOCK_FILE} found. Run 'npx claude-workspace-kit init' first.\n`);
     process.exit(1);
   }
 
@@ -217,9 +217,9 @@ function printHelp() {
   claude-workspace-kit (cwk) v${PKG.version}
 
   Usage:
-    npx cwk [init] [flags]         Install the kit into the current directory
-    npx cwk update [flags]         Update kit-managed files to the latest version
-    npx cwk uninstall [flags]      Remove kit files from the current directory
+    npx claude-workspace-kit [init] [flags]         Install the kit into the current directory
+    npx claude-workspace-kit update [flags]         Update kit-managed files to the latest version
+    npx claude-workspace-kit uninstall [flags]      Remove kit files from the current directory
 
   Init flags:
     --force          Overwrite existing files
@@ -235,10 +235,10 @@ function printHelp() {
     --dry-run        Preview what would be removed
 
   Examples:
-    npx cwk init                        Interactive install
-    npx cwk init --gitignore --force    Install, share exclusions, overwrite
-    npx claude-workspace-kit@latest update       Update to latest kit files
-    npx cwk uninstall --dry-run         Preview uninstall
+    npx claude-workspace-kit init                        Interactive install
+    npx claude-workspace-kit init --gitignore --force    Install, share exclusions, overwrite
+    npx claude-workspace-kit@latest update               Update to latest kit files
+    npx claude-workspace-kit uninstall --dry-run         Preview uninstall
 `);
 }
 
