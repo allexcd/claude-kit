@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## About This Repo
 
-`claude-workflow-kit` is an installer kit — a set of files that users copy into their own projects via `install.sh`. The files in this repo are the *source of truth* for those installs:
+`claude-kit` is an installer kit — a set of files that users copy into their own projects via `install.sh`. The files in this repo are the *source of truth* for those installs:
 
 - **`install.sh`** — copies kit files into a target project directory; never run from inside this repo
 - **`CLAUDE.md`** — gets installed into target projects; also applies when developing the kit itself
@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **`docs/workflow/workflow-orchestration.md`** — the core methodology document (installed)
 - **`tasks/todo.md` / `tasks/lessons.md`** — plan tracking and self-improvement log (installed as empty templates)
 
-To test the installer locally, run it against a scratch project: `mkdir /tmp/scratch-proj && cd /tmp/scratch-proj && git init && node /path/to/claude-workflow-kit/bin/cwk.js init --git-exclude`.
+To test the installer locally, run it against a scratch project: `mkdir /tmp/scratch-proj && cd /tmp/scratch-proj && git init && node /path/to/claude-kit/bin/cwk.js init --git-exclude`.
 
 ---
 

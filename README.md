@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/claude-kit)](https://www.npmjs.com/package/claude-kit)
 [![License: MIT](https://img.shields.io/npm/l/claude-kit)](LICENSE)
 [![Node.js >=20](https://img.shields.io/node/v/claude-kit)](https://www.npmjs.com/package/claude-kit)
-[![GitHub stars](https://img.shields.io/github/stars/allexcd/claude-workflow-kit?style=social)](https://github.com/allexcd/claude-workflow-kit)
+[![GitHub stars](https://img.shields.io/github/stars/allexcd/claude-kit?style=social)](https://github.com/allexcd/claude-kit)
 
 A workflow orchestration kit for Claude Code. Structured rules, agents, skills, and slash commands that make Claude plan before building, verify before closing, and self-improve after corrections.
 
