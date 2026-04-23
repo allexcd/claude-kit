@@ -1,5 +1,6 @@
 # Claude Workspace Kit
 
+[![CI](https://github.com/allexcd/claude-workspace-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/allexcd/claude-workspace-kit/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/claude-workspace-kit)](https://www.npmjs.com/package/claude-workspace-kit)
 [![npm downloads](https://img.shields.io/npm/dm/claude-workspace-kit)](https://www.npmjs.com/package/claude-workspace-kit)
 [![License: MIT](https://img.shields.io/npm/l/claude-workspace-kit)](LICENSE)
@@ -214,3 +215,105 @@ Uses Claude Code's native loader paths:
 ## Complementary Tools
 
 **[graphify](https://github.com/safishamsi/graphify)** — Reduces LLM input tokens by building a knowledge graph from your codebase (code, docs, PDFs, images, video). Agents navigate by graph structure instead of scanning raw files — 71× fewer tokens per query on large corpora.
+
+## Contributing
+
+To contribute, create a branch and open a PR targeting `main`. At least one approval is required before merging. Approvals are dismissed on any new push, requiring re-review.
+
+### Commit Types
+
+| Type | When to use |
+|------|-------------|
+| `feat` | Adding a new feature or capability |
+| `fix` | Fixing a bug or broken behavior |
+| `chore` | Maintenance, configuration, or tooling — no production code change |
+| `docs` | Documentation only — no code changes |
+| `refactor` | Restructuring code without changing its external behavior |
+| `test` | Adding, updating, or fixing tests |
+| `perf` | A change that improves performance |
+| `ci` | Changes to CI/CD configuration or pipeline |
+| `build` | Changes that affect the build system or dependencies |
+| `revert` | Reverting a previous commit |
+| `hotfix` | Urgent fix that needs to go out immediately |
+
+### Branch Names
+
+Branches must follow this pattern:
+
+```
+<type>/<short-description>
+```
+
+Rules:
+- Lowercase and hyphens only — no uppercase, no underscores, no spaces
+- Description must be between 2 and 5 words
+- Keep it descriptive enough to understand at a glance
+
+Examples:
+```
+feat/add-oauth-login
+fix/token-expiry-crash
+chore/update-deps
+docs/improve-readme
+refactor/simplify-update-logic
+test/add-status-unit-tests
+hotfix/fix-broken-publish
+```
+
+### PR Titles
+
+Pull request titles must follow [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```
+<type>(<scope>): [TICKET-123] - <short description>
+```
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `type` | Yes | `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `perf`, `ci`, `build`, `revert` |
+| `(scope)` | No | e.g. `(auth)`, `(cli)` — the area of the codebase affected |
+| `[TICKET-123]` | No | Your issue or ticket reference |
+| `short description` | Yes | Lowercase, no trailing period, imperative tense |
+
+Rules:
+- Description must be lowercase and must not end with a period
+- Total title must be 72 characters or fewer
+- Use imperative tense: "add feature", not "added feature"
+
+Examples:
+```
+feat(auth): [PROJ-123] - add oauth login with google
+fix(cli): handle missing lock file on update
+chore(deps): bump eslint to 10.2.0
+docs(readme): update contributing section
+```
+
+### Commit Messages
+
+Commit messages follow the same format as PR titles:
+
+```
+<type>(<scope>): [TICKET-123] - <short description>
+
+Optional body explaining WHY the change was made, if not obvious.
+```
+
+Rules:
+- Subject line: 50 characters or fewer
+- Body: add only when the why is not obvious — wrap at 72 characters
+- Separate subject and body with a blank line
+- Use imperative tense in the subject
+
+### Merging Rules
+
+| Rule | When enforced |
+|------|--------------|
+| Branch name pattern | On `git push` — push rejected immediately |
+| PR title format | On PR open/edit — CI check blocks merge |
+| Lint | On PR open + every new commit — CI check blocks merge |
+| Tests (Node 20, 22, 24) | On PR open + every new commit — CI check blocks merge |
+| Build / pack check | On PR open + every new commit — CI check blocks merge |
+| 1 approval required | At merge time |
+| Stale approval on new push | At merge time — approval dismissed, re-review required |
+| No direct push to main | On `git push` — push rejected immediately |
+

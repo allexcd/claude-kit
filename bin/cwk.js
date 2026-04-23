@@ -36,7 +36,7 @@ const USER_FILES = ['CLAUDE.md', 'tasks/todo.md', 'tasks/lessons.md'];
 // ── lock file ─────────────────────────────────────────────────────────────────
 
 function readLock() {
-  if (!fs.existsSync(LOCK_PATH)) return null;
+  if (!fs.existsSync(LOCK_PATH)) {return null;}
   return JSON.parse(fs.readFileSync(LOCK_PATH, 'utf8'));
 }
 
@@ -64,17 +64,17 @@ function hasBash() {
 }
 
 function tryRemoveDir(dir) {
-  try { fs.rmdirSync(dir); } catch {}
+  try { fs.rmdirSync(dir); } catch (_) { /* ignore — dir not empty */ }
 }
 
 function removeKitBlock(filePath) {
-  if (!fs.existsSync(filePath)) return;
+  if (!fs.existsSync(filePath)) {return;}
   const lines = fs.readFileSync(filePath, 'utf8').split('\n');
   const markerIdx = lines.findIndex(l => l.startsWith('# Claude Code workflow kit'));
-  if (markerIdx === -1) return;
+  if (markerIdx === -1) {return;}
   const start = markerIdx > 0 && lines[markerIdx - 1].trim() === '' ? markerIdx - 1 : markerIdx;
   let end = markerIdx + 1;
-  while (end < lines.length && lines[end].trim() !== '') end++;
+  while (end < lines.length && lines[end].trim() !== '') {end++;}
   lines.splice(start, end - start);
   fs.writeFileSync(filePath, lines.join('\n'));
 }
@@ -114,13 +114,13 @@ function cmdUpdate(args) {
     process.exit(1);
   }
 
-  if (dryRun) console.log('');
+  if (dryRun) {console.log('');}
   let changed = 0, unchanged = 0;
 
   for (const file of MANAGED_FILES) {
     const src = path.join(KIT_DIR, file);
     const dest = path.join(TARGET_DIR, file);
-    if (!fs.existsSync(src)) continue;
+    if (!fs.existsSync(src)) {continue;}
 
     const srcBuf = fs.readFileSync(src);
     const destBuf = fs.existsSync(dest) ? fs.readFileSync(dest) : null;
@@ -135,13 +135,13 @@ function cmdUpdate(args) {
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.copyFileSync(src, dest);
     if (isDiff) { console.log(`  ✓  ${file}${label}`); changed++; }
-    else unchanged++;
+    else {unchanged++;}
   }
 
   if (!dryRun) {
     updateLock(lock);
     const hook = path.join(TARGET_DIR, '.claude/hooks/session-start.sh');
-    if (fs.existsSync(hook)) fs.chmodSync(hook, 0o755);
+    if (fs.existsSync(hook)) {fs.chmodSync(hook, 0o755);}
     console.log(`\n  Updated ${changed} file${changed !== 1 ? 's' : ''} (${unchanged} already current).\n`);
   } else if (changed === 0) {
     console.log('  All kit files are up to date.\n');
@@ -168,7 +168,7 @@ async function cmdUninstall(args) {
   }
 
   const filesToRemove = [...(lock.managedFiles || MANAGED_FILES)];
-  if (removeUserFiles) filesToRemove.push(...USER_FILES);
+  if (removeUserFiles) {filesToRemove.push(...USER_FILES);}
 
   if (dryRun) {
     console.log('\n  Files that would be removed:');
@@ -177,7 +177,7 @@ async function cmdUninstall(args) {
       console.log(`  • ${file}${exists ? '' : '  (not found)'}`);
     }
     console.log(`  • ${LOCK_FILE}`);
-    if (!all) console.log('\n  User-owned files preserved. Use --all to also remove them.');
+    if (!all) {console.log('\n  User-owned files preserved. Use --all to also remove them.');}
     console.log('\n  (dry run — no files removed)\n');
     return;
   }
