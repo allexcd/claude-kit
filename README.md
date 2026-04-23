@@ -30,7 +30,7 @@ The installer is **interactive** and walks you through three steps:
 2. **Commit** — optionally stage and commit the files (only when choosing to track in git)
 3. **Project context** — optionally run `/init` inside Claude Code to append codebase-specific context to `CLAUDE.md`
 
-### Step 3 — Project context via `/init`
+### Project context via `/init`
 
 At the end of the install, the installer offers to launch Claude Code automatically:
 
