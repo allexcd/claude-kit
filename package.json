@@ -1,5 +1,5 @@
 {
-  "name": "claude-workflow-kit",
+  "name": "claude-kit",
   "version": "1.0.0",
   "description": "Workflow orchestration kit for Claude Code — plan-first, verify-before-done, self-improving.",
   "keywords": ["claude", "claude-code", "workflow", "agents", "cli"],
@@ -13,7 +13,7 @@
   },
   "bin": {
     "cwk": "bin/cwk.js",
-    "claude-workflow-kit": "bin/cwk.js"
+    "claude-kit": "bin/cwk.js"
   },
   "files": [
     "bin/",

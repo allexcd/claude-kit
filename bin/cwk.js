@@ -214,7 +214,7 @@ async function cmdUninstall(args) {
 
 function printHelp() {
   console.log(`
-  claude-workflow-kit (cwk) v${PKG.version}
+  claude-kit (cwk) v${PKG.version}
 
   Usage:
     npx cwk [init] [flags]         Install the kit into the current directory
@@ -237,7 +237,7 @@ function printHelp() {
   Examples:
     npx cwk init                        Interactive install
     npx cwk init --gitignore --force    Install, share exclusions, overwrite
-    npx claude-workflow-kit@latest update    Update to latest kit files
+    npx claude-kit@latest update             Update to latest kit files
     npx cwk uninstall --dry-run         Preview uninstall
 `);
 }

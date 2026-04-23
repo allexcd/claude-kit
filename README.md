@@ -1,9 +1,9 @@
 # Claude Workflow Kit
 
-[![npm version](https://img.shields.io/npm/v/claude-workflow-kit)](https://www.npmjs.com/package/claude-workflow-kit)
-[![npm downloads](https://img.shields.io/npm/dm/claude-workflow-kit)](https://www.npmjs.com/package/claude-workflow-kit)
-[![License: MIT](https://img.shields.io/npm/l/claude-workflow-kit)](LICENSE)
-[![Node.js >=20](https://img.shields.io/node/v/claude-workflow-kit)](https://www.npmjs.com/package/claude-workflow-kit)
+[![npm version](https://img.shields.io/npm/v/claude-kit)](https://www.npmjs.com/package/claude-kit)
+[![npm downloads](https://img.shields.io/npm/dm/claude-kit)](https://www.npmjs.com/package/claude-kit)
+[![License: MIT](https://img.shields.io/npm/l/claude-kit)](LICENSE)
+[![Node.js >=20](https://img.shields.io/node/v/claude-kit)](https://www.npmjs.com/package/claude-kit)
 [![GitHub stars](https://img.shields.io/github/stars/allexcd/claude-workflow-kit?style=social)](https://github.com/allexcd/claude-workflow-kit)
 
 A workflow orchestration kit for Claude Code. Structured rules, agents, skills, and slash commands that make Claude plan before building, verify before closing, and self-improve after corrections.
@@ -13,7 +13,7 @@ A workflow orchestration kit for Claude Code. Structured rules, agents, skills, 
 Run this inside your project directory:
 
 ```bash
-npx claude-workflow-kit init
+npx claude-kit init
 ```
 
 Or using the short alias:
@@ -84,7 +84,7 @@ Non-interactive installs (e.g. CI, piped scripts) default to `--git-exclude` and
 When a new kit version is published:
 
 ```bash
-npx claude-workflow-kit@latest update
+npx claude-kit@latest update
 ```
 
 The update command uses a **file ownership model** to preserve your customizations:
@@ -97,7 +97,7 @@ The update command uses a **file ownership model** to preserve your customizatio
 Preview changes without writing anything:
 
 ```bash
-npx claude-workflow-kit@latest update --dry-run
+npx claude-kit@latest update --dry-run
 ```
 
 ## Uninstall
@@ -140,7 +140,7 @@ Empty directories left behind after file removal are cleaned up automatically. D
 | `cwk uninstall --all` | Also remove user-owned files (full cleanup) |
 | `cwk uninstall --dry-run` | Preview what would be removed without deleting |
 
-`cwk` is an alias for `claude-workflow-kit`.
+`cwk` is an alias for `claude-kit`.
 
 ### Claude Code slash commands
 
