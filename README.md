@@ -67,7 +67,7 @@ npx cwk init --git-track    # no exclusion — commit the files with the repo
 If you chose `--git-track`, the installer prompts whether to commit immediately. If you are on `main` or `master`, it also suggests creating a feature branch first:
 
 ```
-  Suggested: chore/add-claude-workflow-kit
+  Suggested: chore/add-claude-kit
 ```
 
 To commit manually later:

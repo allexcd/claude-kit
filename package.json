@@ -4,6 +4,10 @@
   "description": "Workflow orchestration kit for Claude Code — plan-first, verify-before-done, self-improving.",
   "keywords": ["claude", "claude-code", "workflow", "agents", "cli"],
   "license": "MIT",
+  "homepage": "https://github.com/allexcd/claude-kit#readme",
+  "bugs": {
+    "url": "https://github.com/allexcd/claude-kit/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/allexcd/claude-kit"
