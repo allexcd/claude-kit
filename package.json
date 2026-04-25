@@ -1,8 +1,14 @@
 {
   "name": "claude-workspace-kit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Workflow orchestration kit for Claude Code — plan-first, verify-before-done, self-improving.",
-  "keywords": ["claude", "claude-code", "workflow", "agents", "cli"],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "workflow",
+    "agents",
+    "cli"
+  ],
   "license": "MIT",
   "homepage": "https://github.com/allexcd/claude-workspace-kit#readme",
   "bugs": {
