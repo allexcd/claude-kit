@@ -17,7 +17,8 @@
   },
   "scripts": {
     "lint": "eslint bin/",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "release": "node scripts/release.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
