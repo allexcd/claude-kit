@@ -7,7 +7,9 @@ Review the changes in: **$ARGUMENTS** (if blank, use `git diff main...HEAD` for 
 
 ## Instructions
 1. Get the diff:
-   - If $ARGUMENTS is a PR number, fetch it via `gh pr diff $ARGUMENTS`
+   - If $ARGUMENTS is a PR number:
+     - Try `gh pr diff $ARGUMENTS` (requires the [GitHub CLI](https://cli.github.com/))
+     - If `gh` is not available or this is not a GitHub repo, tell the user: "Install `gh` and run `gh auth login`, or check out the branch locally and re-run `/review <branch>`"
    - If $ARGUMENTS is a branch name, run `git diff $ARGUMENTS...HEAD`
    - If no argument, run `git diff main...HEAD`
 2. For each changed file, assess:
