@@ -64,14 +64,16 @@ Never duplicate between the two layers. If a correction is team-relevant, it goe
 ## Available Specialist Agents
 - `deep-reviewer` — architecture and quality review; challenges elegance, validates edge cases, requires proof.
 - `fast-implementer` — executes an approved plan with minimal diff; root-cause fixes only.
+- `codebase-explorer` — fast, read-only exploration; traces call paths, maps structure, finds symbol usages.
 
-Dispatch with the Agent tool (`subagent_type: deep-reviewer` / `fast-implementer`). See `.claude/skills/subagent-strategy/SKILL.md`.
+Dispatch with the Agent tool (`subagent_type: deep-reviewer` / `fast-implementer` / `codebase-explorer`). See `.claude/skills/subagent-strategy/SKILL.md`.
 
 ## Available Slash Commands
 - `/kickoff <task>` — plan-first launch for a new task.
 - `/verify-and-close` — verification checklist before marking a task done.
 - `/elegant-fix` — elegance review of the current implementation.
-- `/output-style terse` — switch to compact output style.
+- `/review [PR# or branch]` — review current branch diff or a specified PR.
+- `/output-style <terse|verbose>` — switch output style for this session.
 
 ## Auto-Invoked Skills
 These trigger automatically when Claude judges the description matches the task — no slash command needed:
