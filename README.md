@@ -86,8 +86,8 @@ The update command uses a **file ownership model** to preserve your customizatio
 
 | Tier | Behavior | Files |
 |------|----------|-------|
-| **Kit-managed** | Auto-updated to latest version | Skills, agents, commands, hooks, settings, output styles, workflow docs |
-| **User-owned** | Never overwritten by update | `CLAUDE.md`, `.claude/rules/*.md`, `tasks/todo.md`, `tasks/lessons.md` |
+| **Kit-managed** | Auto-updated to latest version | Skills, agents, commands, rules, hooks, settings, output styles, workflow docs |
+| **User-owned** | Never overwritten by update | `CLAUDE.md`, `tasks/todo.md`, `tasks/lessons.md` |
 
 Preview changes without writing anything:
 
@@ -103,7 +103,7 @@ To remove all kit-installed files from your project:
 npx claude-workspace-kit uninstall
 ```
 
-By default this removes only **kit-managed** files and the `.cwk.lock` lockfile. **User-owned** files (`CLAUDE.md`, `.claude/rules/`, `tasks/`) are left untouched.
+By default this removes only **kit-managed** files and the `.cwk.lock` lockfile. **User-owned** files (`CLAUDE.md`, `tasks/`) are left untouched.
 
 To remove everything — including user-owned files:
 
@@ -155,14 +155,12 @@ These run inside a Claude Code session (not in the terminal):
 **User-owned files** are yours to modify freely. They are scaffolded once and never touched by `update`:
 
 - `CLAUDE.md` — Add project-specific rules and context (use `/init` to populate automatically)
-- `.claude/rules/backend.md` — Adapt to your backend language, framework, or coding standards
-- `.claude/rules/frontend.md` — Adapt to your frontend framework, styling system, or component patterns
 - `tasks/todo.md`, `tasks/lessons.md` — Used during development for planning and self-improvement
 
-**Kit-managed files** receive upstream improvements automatically. If you need to customize a skill, agent, or command:
+**Kit-managed files** receive upstream improvements automatically on `cwk update`. If you need to customize a skill, agent, command, or rule:
 
-1. Create a *new* file alongside the kit version (e.g., `.claude/skills/my-custom-skill/SKILL.md`)
-2. Leave kit-managed originals untouched so `update` continues to work
+1. Create a *new* file alongside the kit version — e.g., `.claude/skills/my-workflow/SKILL.md` or `.claude/rules/my-project.md`
+2. Leave kit-managed originals untouched so `update` continues to deliver improvements
 
 This way your customizations live alongside the kit without conflicts.
 
@@ -236,7 +234,7 @@ Shell scripts registered in `settings.json` that run automatically:
 |---|---|---|
 | Workflow rules | `docs/workflow/workflow-orchestration.md` | Kit-managed |
 | Root instructions | `CLAUDE.md` | User-owned |
-| Path-scoped rules | `.claude/rules/backend.md`, `.claude/rules/frontend.md` | User-owned |
+| Path-scoped rules | `.claude/rules/backend.md`, `.claude/rules/frontend.md` | Kit-managed |
 | Agents | `.claude/agents/*.md` | Kit-managed |
 | Slash commands | `.claude/commands/*.md` | Kit-managed |
 | Skills | `.claude/skills/*/SKILL.md` | Kit-managed |

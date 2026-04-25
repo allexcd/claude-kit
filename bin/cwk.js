@@ -28,6 +28,8 @@ const MANAGED_FILES = [
   '.claude/skills/self-improvement/SKILL.md',
   '.claude/skills/subagent-strategy/SKILL.md',
   '.claude/skills/verification/SKILL.md',
+  '.claude/rules/backend.md',
+  '.claude/rules/frontend.md',
   '.claude/output-styles/terse.md',
   '.claude/output-styles/verbose.md',
   '.claude/hooks/session-start.sh',
@@ -35,14 +37,7 @@ const MANAGED_FILES = [
   'docs/workflow/workflow-orchestration.md',
 ];
 
-// Rule files are user-owned: teams customize them for their stack and they are never overwritten by update.
-const USER_FILES = [
-  'CLAUDE.md',
-  'tasks/todo.md',
-  'tasks/lessons.md',
-  '.claude/rules/backend.md',
-  '.claude/rules/frontend.md',
-];
+const USER_FILES = ['CLAUDE.md', 'tasks/todo.md', 'tasks/lessons.md'];
 
 // ── lock file ─────────────────────────────────────────────────────────────────
 
