@@ -86,8 +86,8 @@ The update command uses a **file ownership model** to preserve your customizatio
 
 | Tier | Behavior | Files |
 |------|----------|-------|
-| **Kit-managed** | Auto-updated to latest version | Skills, agents, commands, hooks, settings, workflow docs |
-| **User-owned** | Never overwritten by update | `CLAUDE.md`, `tasks/todo.md`, `tasks/lessons.md` |
+| **Kit-managed** | Auto-updated to latest version | Skills, agents, commands, hooks, settings, output styles, workflow docs |
+| **User-owned** | Never overwritten by update | `CLAUDE.md`, `.claude/rules/*.md`, `tasks/todo.md`, `tasks/lessons.md` |
 
 Preview changes without writing anything:
 
@@ -103,7 +103,7 @@ To remove all kit-installed files from your project:
 npx claude-workspace-kit uninstall
 ```
 
-By default this removes only **kit-managed** files and the `.cwk.lock` lockfile. **User-owned** files (`CLAUDE.md`, `tasks/`) are left untouched.
+By default this removes only **kit-managed** files and the `.cwk.lock` lockfile. **User-owned** files (`CLAUDE.md`, `.claude/rules/`, `tasks/`) are left untouched.
 
 To remove everything — including user-owned files:
 
