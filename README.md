@@ -95,6 +95,16 @@ Preview changes without writing anything:
 npx claude-workspace-kit@latest update --dry-run
 ```
 
+## Release
+
+Maintainers can prepare a release PR from `main`:
+
+```bash
+npm run release
+```
+
+The command checks for a clean working tree, asks for a patch/minor/major bump, creates a `release/vX.Y.Z` branch, updates `package.json` and `package-lock.json`, commits, pushes, and opens a PR. After that PR is merged, GitHub Actions creates the tag and GitHub Release, then publishes the package to npm with `NPM_TOKEN`.
+
 ## Uninstall
 
 To remove all kit-installed files from your project:
@@ -376,4 +386,3 @@ Rules:
 | 1 approval required | At merge time |
 | Stale approval on new push | At merge time — approval dismissed, re-review required |
 | No direct push to main | On `git push` — push rejected immediately |
-

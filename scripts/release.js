@@ -1,182 +1,186 @@
 #!/usr/bin/env node
 'use strict';
 
-// Local release helper for claude-workspace-kit.
-//
-// What it does:
-//   1. Guards — clean working tree, lint passes, tests pass
-//   2. Shows commits since the last tag and suggests a bump type
-//   3. Prompts for patch / minor / major
-//   4. Previews the npm package contents (npm pack --dry-run)
-//   5. Bumps package.json version (no local git tag — CI creates that on merge)
-//   6. Commits the bump with a conventional commit message
-//   7. Pushes to a release branch and opens a PR (requires gh CLI), or prints next steps
-//
-// Usage: npm run release
-
-const { execSync, spawnSync } = require('child_process');
-const readline = require('readline');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
+const readline = require('readline');
+const { execFileSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
 const PKG_PATH = path.join(ROOT, 'package.json');
+const LOCK_PATH = path.join(ROOT, 'package-lock.json');
+const BUMP_TYPES = new Set(['patch', 'minor', 'major']);
 
-// ── helpers ───────────────────────────────────────────────────────────────────
-
-function run(cmd) {
-  return execSync(cmd, { cwd: ROOT, encoding: 'utf8' }).trim();
+function run(command, args = [], opts = {}) {
+  return execFileSync(command, args, {
+    cwd: ROOT,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    ...opts,
+  }).trim();
 }
 
-function runVisible(cmd) {
-  const result = spawnSync(cmd, { shell: true, stdio: 'inherit', cwd: ROOT });
-  return result.status === 0;
+function printHelp() {
+  console.log(`
+  claude-workspace-kit release
+
+  Usage:
+    npm run release
+
+  Steps:
+    1. Require a clean main branch
+    2. Fetch tags and choose patch/minor/major
+    3. Create release/vX.Y.Z
+    4. Bump package.json and package-lock.json
+    5. Commit, push, and open a PR
+
+  After the PR is merged, GitHub Actions creates the tag, creates the GitHub
+  release, and publishes the package to npm.
+`);
+}
+
+function fail(message, detail = '') {
+  console.error(`\n  Error: ${message}\n`);
+  if (detail) {
+    console.error(detail);
+    console.error('');
+  }
+  process.exit(1);
+}
+
+function checkDependencies() {
+  try {
+    run('gh', ['--version']);
+  } catch {
+    fail('gh CLI is not installed or not in PATH.', '  Install it from https://cli.github.com and run "gh auth login" first.');
+  }
+
+  try {
+    run('gh', ['auth', 'status']);
+  } catch {
+    fail('gh CLI is not authenticated. Run "gh auth login" first.');
+  }
+}
+
+function assertSemver(version, label) {
+  if (!/^\d+\.\d+\.\d+$/.test(version)) {
+    fail(`${label} must be a plain semver version like 1.2.3. Found "${version}".`);
+  }
+}
+
+function bumpVersion(current, type) {
+  assertSemver(current, 'Current version');
+  const [major, minor, patch] = current.split('.').map(Number);
+
+  if (type === 'major') {
+    return `${major + 1}.0.0`;
+  }
+  if (type === 'minor') {
+    return `${major}.${minor + 1}.0`;
+  }
+  return `${major}.${minor}.${patch + 1}`;
+}
+
+function latestVersionTag() {
+  const tags = run('git', ['tag', '--sort=-v:refname'])
+    .split('\n')
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+
+  return tags.find((tag) => /^v\d+\.\d+\.\d+$/.test(tag)) || null;
 }
 
 function prompt(question) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise(resolve => rl.question(question, ans => { rl.close(); resolve(ans.trim()); }));
+  return new Promise((resolve) => rl.question(question, (answer) => {
+    rl.close();
+    resolve(answer.trim());
+  }));
 }
-
-function ok(msg)   { console.log(`  ✓  ${msg}`); }
-function fail(msg) { console.error(`  ✗  ${msg}`); process.exit(1); }
-function info(msg) { console.log(`  ${msg}`); }
-function section(msg) { console.log(`\n  ${msg}`); }
-
-function bumpVersion(current, type) {
-  const [major, minor, patch] = current.split('.').map(Number);
-  if (type === 'major') return `${major + 1}.0.0`;
-  if (type === 'minor') return `${major}.${minor + 1}.0`;
-  return `${major}.${minor}.${patch + 1}`;
-}
-
-function suggestBump(commits) {
-  if (!commits) return 'patch';
-  const lines = commits.split('\n');
-  if (lines.some(c => /BREAKING[ -]CHANGE|^[^:]+!:/.test(c))) return 'major';
-  if (lines.some(c => /^feat[:(]/.test(c))) return 'minor';
-  return 'patch';
-}
-
-function ghAvailable() {
-  try { run('gh --version'); return true; } catch { return false; }
-}
-
-// ── main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('\n  claude-workspace-kit — release helper');
-  console.log('  =====================================');
-
-  // 1. Clean working tree
-  section('Checking working tree...');
-  const dirty = run('git status --porcelain');
-  if (dirty) {
-    fail(`Working tree has uncommitted changes. Commit or stash them first.\n\n${dirty.split('\n').map(l => `    ${l}`).join('\n')}`);
-  }
-  ok('Working tree is clean');
-
-  // 2. Lint
-  section('Running lint...');
-  if (!runVisible('npm run lint --silent')) fail('Lint failed. Fix errors before releasing.');
-  ok('Lint passed');
-
-  // 3. Tests
-  section('Running tests...');
-  if (!runVisible('npm test')) fail('Tests failed. Fix before releasing.');
-  ok('Tests passed');
-
-  // 4. Show commits since last tag
-  let lastTag;
-  try { lastTag = run('git describe --tags --abbrev=0'); } catch { lastTag = null; }
-
-  const logRange = lastTag ? `${lastTag}..HEAD` : 'HEAD';
-  const commits = (() => { try { return run(`git log ${logRange} --format="%s"`); } catch { return ''; } })();
-
-  section(lastTag ? `Changes since ${lastTag}:` : 'All commits (no previous tag found):');
-
-  if (!commits) {
-    info('⚠  No new commits since last tag.');
-    const ans = await prompt('\n  Continue anyway? [y/N] ');
-    if (!/^y/i.test(ans)) { console.log('\n  Aborted.\n'); process.exit(0); }
-  } else {
-    commits.split('\n').forEach(c => info(`  • ${c}`));
+  if (process.argv.includes('--help') || process.argv.includes('-h')) {
+    printHelp();
+    return;
   }
 
-  // 5. Suggest bump type
-  const suggested = suggestBump(commits);
+  const status = run('git', ['status', '--porcelain']);
+  if (status) {
+    fail('Working tree has uncommitted changes. Commit or stash them first.', status);
+  }
+
+  const currentBranch = run('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
+  if (currentBranch !== 'main') {
+    fail(`Must be on main branch to create a release. Currently on "${currentBranch}".`);
+  }
+
+  checkDependencies();
+
+  run('git', ['fetch', '--tags']);
+
   const pkg = JSON.parse(fs.readFileSync(PKG_PATH, 'utf8'));
-  const current = pkg.version;
+  assertSemver(pkg.version, 'package.json version');
 
-  console.log(`\n  Current version : ${current}`);
-  console.log(`  Suggested bump  : ${suggested}  (${bumpVersion(current, suggested)})\n`);
-  info('[1] patch  — backwards-compatible bug fixes');
-  info('[2] minor  — new features, backwards-compatible');
-  info('[3] major  — breaking changes');
-
-  const choice = await prompt('\n  Bump type [1/2/3] or Enter to accept suggestion: ');
-  const bumpMap = { '': suggested, '1': 'patch', '2': 'minor', '3': 'major' };
-  const bump = bumpMap[choice];
-  if (!bump) fail(`Invalid choice: "${choice}"`);
-
-  const newVersion = bumpVersion(current, bump);
-  console.log(`\n  Will bump: ${current} → ${newVersion}`);
-
-  // 6. Preview package contents
-  section('Previewing npm publish contents (npm pack --dry-run)...\n');
-  runVisible('npm pack --dry-run');
-
-  // 7. Confirm
-  console.log('');
-  const confirm = await prompt(`  Bump to ${newVersion} and commit? [y/N] `);
-  if (!/^y/i.test(confirm)) { console.log('\n  Aborted.\n'); process.exit(0); }
-
-  // 8. Bump version (--no-git-tag-version: CI creates the tag on merge)
-  section(`Bumping version to ${newVersion}...`);
-  run(`npm version ${bump} --no-git-tag-version`);
-  ok(`package.json updated to ${newVersion}`);
-
-  // 9. Commit
-  section('Committing...');
-  run('git add package.json package-lock.json');
-  run(`git commit -m "chore(release): bump version to ${newVersion}"`);
-  ok(`chore(release): bump version to ${newVersion}`);
-
-  const prTitle = `chore(release): bump version to ${newVersion}`;
-  const releaseBranch = `chore/release-${newVersion}`;
-
-  // 10. Push + PR
-  const pushAns = await prompt(`\n  Push to '${releaseBranch}' and open a PR? [y/N] `);
-
-  if (/^y/i.test(pushAns)) {
-    section(`Pushing to ${releaseBranch}...`);
-    run(`git checkout -b ${releaseBranch}`);
-    run(`git push origin ${releaseBranch}`);
-    ok(`Pushed to origin/${releaseBranch}`);
-
-    if (ghAvailable()) {
-      section('Opening PR...');
-      try {
-        run(`gh pr create --title "${prTitle}" --base main --body "Bump version to ${newVersion}. Merging to main will trigger the automated tag and npm publish workflow."`);
-        ok(`PR opened: ${prTitle}`);
-      } catch {
-        info(`⚠  Could not open PR automatically. Open one manually from '${releaseBranch}'.`);
-      }
-    } else {
-      info('gh CLI not found — open the PR manually.');
+  let current = pkg.version;
+  const latestTag = latestVersionTag();
+  if (latestTag) {
+    const latestVersion = latestTag.replace(/^v/, '');
+    if (latestVersion !== pkg.version) {
+      console.log(`\n  package.json (${pkg.version}) is behind latest tag (${latestTag}); using tag as base.`);
     }
-  } else {
-    console.log(`\n  Next steps:`);
-    info(`1. git checkout -b ${releaseBranch} && git push origin ${releaseBranch}`);
-    info('2. Open a PR to main');
-    info('3. Once merged, CI will create the tag and publish to npm automatically');
+    current = latestVersion;
   }
 
-  console.log(`\n  Suggested PR title: \`${prTitle}\``);
-  console.log('\n  Done.\n');
+  console.log(`\n  Current version: ${current}`);
+  console.log('  Bump type: patch | minor | major\n');
+
+  const input = await prompt('  Bump type (patch): ');
+  const bumpType = input || 'patch';
+  if (!BUMP_TYPES.has(bumpType)) {
+    fail(`Invalid bump type "${bumpType}". Must be patch, minor, or major.`);
+  }
+
+  const next = bumpVersion(current, bumpType);
+  const tag = `v${next}`;
+  const branch = `release/${tag}`;
+
+  console.log(`\n  ${current} -> ${next} (${tag})`);
+  console.log(`  Branch: ${branch}\n`);
+
+  run('git', ['checkout', '-b', branch]);
+
+  pkg.version = next;
+  fs.writeFileSync(PKG_PATH, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
+
+  if (fs.existsSync(LOCK_PATH)) {
+    run('npm', ['install', '--package-lock-only', '--ignore-scripts']);
+    console.log(`  OK package.json + package-lock.json -> ${next}`);
+  } else {
+    console.log(`  OK package.json -> ${next}`);
+  }
+
+  const filesToCommit = fs.existsSync(LOCK_PATH) ? ['package.json', 'package-lock.json'] : ['package.json'];
+  run('git', ['add', ...filesToCommit]);
+  run('git', ['commit', '-m', `chore: release ${tag}`]);
+  console.log(`  OK commit: chore: release ${tag}`);
+
+  run('git', ['push', '-u', 'origin', branch]);
+  console.log(`  OK pushed branch: ${branch}`);
+
+  const prBody = `Bump version to ${next}.\n\nOnce merged, CI will create the ${tag} tag and trigger npm publish.`;
+  const prBodyPath = path.join(os.tmpdir(), `cwk-release-${next}.md`);
+  fs.writeFileSync(prBodyPath, prBody, 'utf8');
+  try {
+    run('gh', ['pr', 'create', '--title', `chore: release ${tag}`, '--body-file', prBodyPath, '--base', 'main']);
+  } finally {
+    fs.unlinkSync(prBodyPath);
+  }
+  console.log('  OK PR opened against main');
+
+  console.log('\n  Done. Merge the PR to trigger tagging and npm publish.\n');
 }
 
-main().catch(e => {
-  console.error('\n  Unexpected error:', e.message);
-  process.exit(1);
+main().catch((err) => {
+  fail(`Release failed: ${err.message}`);
 });

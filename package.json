@@ -16,9 +16,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "lint": "eslint bin/",
-    "test": "jest --passWithNoTests",
-    "release": "node scripts/release.js"
+    "release": "node scripts/release.js",
+    "lint": "eslint bin/ scripts/",
+    "test": "jest --passWithNoTests"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
