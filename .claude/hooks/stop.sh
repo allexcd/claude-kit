@@ -3,7 +3,7 @@
 # Surfaces open tasks/todo.md items and prompts for lessons capture at session end (§3, §4).
 #
 # Output on stdout is appended to the session context per Claude Code hook contract.
-# Keep output small — it runs at the end of every agentic turn.
+# Keep output small — it runs when an autonomous task completes (the agentic loop exits).
 
 set -e
 
