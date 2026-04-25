@@ -23,7 +23,7 @@ if [ "$open" -gt 0 ]; then
   echo ""
 fi
 
-if [ "$entries" -eq 0 ] && [ -f tasks/todo.md ]; then
+if [ "$entries" -eq 0 ] && [ -f tasks/lessons.md ]; then
   echo "=== Reminder: tasks/lessons.md has no entries — capture any corrections before leaving. ==="
   echo ""
 fi
