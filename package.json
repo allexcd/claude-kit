@@ -23,7 +23,7 @@
   },
   "scripts": {
     "release": "node scripts/release.js",
-    "lint": "eslint bin/ scripts/",
+    "lint": "eslint bin/ scripts/ src/ __tests__/",
     "test": "jest --passWithNoTests"
   },
   "devDependencies": {
@@ -37,6 +37,7 @@
   },
   "files": [
     "bin/",
+    "src/",
     "install.sh",
     "CLAUDE.md",
     ".claude/agents/",

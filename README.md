@@ -17,7 +17,7 @@ Run this inside your project directory:
 npx claude-workspace-kit init
 ```
 
-This scaffolds all kit files into your project and creates a `.cwk.lock` file to track versions.
+This scaffolds kit files into your project and creates a `.cwk.lock` file to track versions, file ownership, and your selected git handling mode. Existing files are skipped unless you pass `--force`; skipped files that differ from the kit template are not claimed as kit-owned or added to the kit git block.
 
 The installer is **interactive** and walks you through three steps:
 
@@ -59,6 +59,8 @@ npx claude-workspace-kit init --gitignore    # append to .gitignore (shared with
 npx claude-workspace-kit init --git-track    # no exclusion — commit the files with the repo
 ```
 
+The installed `cwk` binary supports the same commands as the `npx claude-workspace-kit` examples. Direct `bash install.sh` installs are also supported for local clones; when Node.js is available, the script delegates to the same CLI lifecycle as `cwk`. Without Node.js, it uses a legacy scaffold-only fallback and prints a warning.
+
 If you chose `--git-track`, the installer prompts whether to commit immediately. If you are on `main` or `master`, it also suggests creating a feature branch first:
 
 ```
@@ -74,6 +76,8 @@ git commit -m "chore: add claude devkit"
 
 Non-interactive installs (e.g. CI, piped scripts) default to `--git-exclude` and skip both the commit and `/init` prompts. A tip is printed at the end with manual instructions.
 
+The Node CLI writes git exclusions as exact lock-tracked file paths inside a bounded Claude Code workflow kit block. Existing repository ignores stay untouched outside that block.
+
 ## Update
 
 When a new kit version is published:
@@ -88,6 +92,10 @@ The update command uses a **file ownership model** to preserve your customizatio
 |------|----------|-------|
 | **Kit-managed** | Auto-updated to latest version | Skills, agents, commands, rules, hooks, settings, output styles, workflow docs |
 | **User-owned** | Never overwritten by update | `CLAUDE.md`, `tasks/todo.md`, `tasks/lessons.md` |
+
+`update` reuses the git handling mode saved during `init`. Older lockfiles without a saved mode prompt once in an interactive git repository; non-interactive old-lockfile updates still update files, but skip `.gitignore` / `.git/info/exclude` changes and print a warning.
+
+When a new kit version adds files, missing kit-managed files are created and missing user-owned files are scaffolded once. Existing untracked paths are not overwritten unless `--force` is passed. Obsolete unmodified kit-managed files are removed, while obsolete locally modified files are kept but removed from tracking.
 
 Preview changes without writing anything:
 
@@ -113,7 +121,7 @@ To remove all kit-installed files from your project:
 npx claude-workspace-kit uninstall
 ```
 
-By default this removes only **kit-managed** files and the `.cwk.lock` lockfile. **User-owned** files (`CLAUDE.md`, `tasks/`) are left untouched.
+By default this removes only **kit-managed** files and the `.cwk.lock` lockfile. **User-owned** files (`CLAUDE.md`, `tasks/`) are left untouched. Locally modified files selected for uninstall are kept unless `--force` is passed; if any modified files are kept, `.cwk.lock` is kept too.
 
 To remove everything — including user-owned files:
 
@@ -130,6 +138,8 @@ npx claude-workspace-kit uninstall --all --dry-run
 
 Empty directories left behind after file removal are cleaned up automatically. Directories that still contain other files are preserved. Git exclusion entries added by the kit (in `.git/info/exclude` or `.gitignore`) are also removed.
 
+During `--all`, locally modified user-owned files require confirmation before deletion. Non-interactive uninstall keeps modified user-owned files unless `--force` is passed.
+
 ## CLI Commands
 
 | Command | Purpose |
@@ -141,8 +151,13 @@ Empty directories left behind after file removal are cleaned up automatically. D
 | `cwk init --force` | Re-scaffold all files, overwriting any existing ones |
 | `cwk update` | Update kit-managed files to the latest version |
 | `cwk update --dry-run` | Preview updates without writing any files |
+| `cwk update --git-exclude` | Update and refresh paths in `.git/info/exclude` |
+| `cwk update --gitignore` | Update and refresh paths in `.gitignore` |
+| `cwk update --git-track` | Update without writing git ignore/exclude files |
+| `cwk update --force` | Update even when files are locally modified |
 | `cwk uninstall` | Remove kit-managed files and the lockfile |
 | `cwk uninstall --all` | Also remove user-owned files (full cleanup) |
+| `cwk uninstall --force` | Remove locally modified files selected for uninstall without prompting |
 | `cwk uninstall --dry-run` | Preview what would be removed without deleting |
 
 The installed binary is available as `cwk`, but one-shot `npx` commands must use the package name: `npx claude-workspace-kit ...`.
@@ -268,7 +283,7 @@ Shell scripts registered in `.claude/settings.json` that run automatically at de
 - **`.claude/hooks/stop.sh`** — runs when an autonomous task completes (agentic task completion); reminds about open tasks and prompts for lesson capture if `tasks/lessons.md` has no entries.
 - **`tasks/todo.md` + `tasks/lessons.md`** — canonical persisted plan and lesson log.
 - **`~/.claude/projects/<project-slug>/memory/`** — personal cross-session memory, managed by Claude Code outside the repo. Use for user preferences, project context, and references that don't belong committed. Use `tasks/lessons.md` for anything team-shared.
-- **`.cwk.lock`** — written by `npx claude-workspace-kit init`, read by `update` and `uninstall` to know which files are kit-managed vs user-owned.
+- **`.cwk.lock`** — written by `npx claude-workspace-kit init`, read by `update` and `uninstall` to know which files are kit-managed vs user-owned and which git mode was selected.
 
 ## Compatibility
 

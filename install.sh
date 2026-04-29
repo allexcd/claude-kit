@@ -14,6 +14,14 @@ if [ "$SCRIPT_DIR" = "$TARGET_DIR" ]; then
   exit 1
 fi
 
+if command -v node &>/dev/null; then
+  exec node "$SCRIPT_DIR/bin/cwk.js" init "$@"
+fi
+
+echo "  WARNING: node was not found; using legacy bash fallback."
+echo "           Update/uninstall lifecycle features require Node.js or npx."
+echo ""
+
 FORCE=0
 GIT_MODE=""   # "exclude" | "gitignore" | "track" | ""
 
