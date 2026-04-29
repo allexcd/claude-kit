@@ -1,6 +1,6 @@
 {
   "name": "claude-workspace-kit",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Workflow orchestration kit for Claude Code — plan-first, verify-before-done, self-improving.",
   "keywords": [
     "claude",
